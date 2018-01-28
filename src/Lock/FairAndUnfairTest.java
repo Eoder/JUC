@@ -1,72 +1,81 @@
 package Lock;
 
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.junit.Test;
-
-import chapter05.FairAndUnfairTest.Job;
-
+/**
+ * 10-15
+ */
 public class FairAndUnfairTest {
-	
-	private static Lock fairLock = new ReentantLock2(true);
-	private static Lock unfairLock = new ReentantLock2(false);
-	private static CountDownLatch start;
-	
-	@Test
-	public void fair(){
-		
-		testLock(fairLock);
-	}
-	
-	@Test
-	public void unfair(){
-		testLock(unfairLock);
-	}
-	
-	public void testLock(Lock lock){
-		//启动5个Lock
-		 start = new CountDownLatch(1);
-	     for (int i = 0; i < 5; i++) {
-	            Thread thread = new Job(lock);
-	            thread.setName("" + i);
-	            thread.start();
-	     }
-	     start.countDown();
-	}	
-	
-	private static class Job extends Thread{
-		private Lock lock;
-		public Job(Lock lock){
-			this.lock=lock;
-		}
-		
-		public void run(){
-			//连续2次打印当前的Thread 和等待队列中的 Thread
-		}
-		
-		
-	}
 
+    private static Lock           fairLock   = new ReentrantLock2(true);
+    private static Lock           unfairLock = new ReentrantLock2(false);
+    private static CountDownLatch start;
 
-	private  static class ReentantLock2 extends ReentrantLock{
-		
-		public ReentantLock2(boolean fair)
-		{
-			super(fair);
-		}
-		public Collection<Thread> getQueuedThreads(){
-			List<Thread> arrayList = new ArrayList<Thread>(super.getWaitQueueLength(null));
-			Collections.reverse(arrayList);
-			return arrayList;
-			
-		}
-		
-	}
-	
+    public void fair() {
+        testLock(fairLock);
+    }
 
+    public void unfair() {
+        testLock(unfairLock);
+    }
+
+    private void testLock(Lock lock) {
+        start = new CountDownLatch(1);
+        for (int i = 0; i < 5; i++) {
+            Thread thread = new Job(lock);
+            thread.setName("" + i);
+            thread.start();
+        }
+        start.countDown();
+    }
+
+    private static class Job extends Thread {
+        private Lock lock;
+
+        public Job(Lock lock) {
+            this.lock = lock;
+        }
+
+        @Override
+        public void run() {
+            try {
+                start.await();
+            } catch (InterruptedException e) {
+            }
+            for (int i = 0; i < 2; i++) {
+                lock.lock();
+                try {
+                    System.out.println("Lock by [" + getName() + "], Waiting by " + ((ReentrantLock2) lock).getQueuedThreads());
+                } finally {
+                    lock.unlock();
+                }
+            }
+        }
+
+        public String toString() {
+            return getName();
+        }
+    }
+
+    private static class ReentrantLock2 extends ReentrantLock {
+        private static final long serialVersionUID = -6736727496956351588L;
+
+        public ReentrantLock2(boolean fair) {
+            super(fair);
+        }
+
+        public Collection<Thread> getQueuedThreads() {
+            List<Thread> arrayList = new ArrayList<Thread>(super.getQueuedThreads());
+            Collections.reverse(arrayList);
+            return arrayList;
+        }
+    }
 }
-
