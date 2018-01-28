@@ -1,0 +1,3 @@
+HashTable 和 ConcurrentHshMap都是线程安全的，但HashTable会产生线程冲突，而HashMap则不会。
+因为HashTable所有方法都采用Single Thread Execution 模式，所有方法都用Synchronized修饰，会产生线程冲突，导致程序性能下降；
+ConcurrentHshMap将内部数据结构分成多段，各段操作线程相安无事。
