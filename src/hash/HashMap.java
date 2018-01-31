@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Functiresizeon;
 
 /**
  * Hash table based implementation of the <tt>Map</tt> interface.  This
@@ -446,7 +446,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
     public HashMap(int initialCapacity) {
-        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);       
     }
 
     /**
@@ -479,6 +479,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * true (relayed to method afterNodeInsertion).
      */
     final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
+    	
         int s = m.size();
         if (s > 0) {
             if (table == null) { // pre-size
