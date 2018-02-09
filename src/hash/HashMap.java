@@ -395,6 +395,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * the HashMap fail-fast.  (See ConcurrentModificationException).
      */
     transient int modCount;
+    HashMap m;
 
     /**
      * The next size value at which to resize (capacity * load factor).
